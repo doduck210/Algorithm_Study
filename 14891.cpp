@@ -1,4 +1,4 @@
-//https://www.acmicpc.net/problem/14891
+//https://www.acmicpc.net/problem/14891 
 #include <iostream>
 #include <cmath>
 using namespace std;
