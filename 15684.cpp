@@ -38,16 +38,17 @@ bool simul(){
     return true;
 }
 
-void dfs(int cnt){
-    if(cnt>3){
+void dfs(int cnt,int x, int y){
+    if(cnt>=ans){
         return;
     }
     if(simul()){
         ans=min(ans,cnt);
         return;
     }
-    for(int i=0;i<H;i++){
-        for(int j=0;j<N-1;j++){
+    for(int i=y;i<H;i++){
+        for(int j=x;j<N-1;j++){
+            x=0;
             if(ladder[i][j]==0){
                 if(ladder[i][j+1]>0){
                     continue;
@@ -63,7 +64,7 @@ void dfs(int cnt){
                     ladder[i][j]=0;
                     return;
                 }
-                dfs(cnt+1);
+                dfs(cnt+1,j,i);
                 ladder[i][j]=0;
             }
         }
@@ -73,7 +74,7 @@ void dfs(int cnt){
 int main(){
     input();
 
-    dfs(0);
+    dfs(0,0,0);
 
     if(ans>3)
         ans=-1;
