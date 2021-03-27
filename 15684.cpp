@@ -1,4 +1,4 @@
-//https://www.acmicpc.net/problem/15684
+//https://www.acmicpc.net/problem/15684 
 #include <iostream>
 #include <algorithm>
 using namespace std;
@@ -59,11 +59,6 @@ void dfs(int cnt,int x, int y){
                     }
                 }
                 ladder[i][j]=cnt+2;
-                if(simul()){
-                    ans=min(ans,cnt+1);
-                    ladder[i][j]=0;
-                    return;
-                }
                 dfs(cnt+1,j,i);
                 ladder[i][j]=0;
             }
