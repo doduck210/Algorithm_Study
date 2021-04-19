@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 int r,c;
@@ -6,6 +7,7 @@ char table[1500][1500];
 bool visited[1500][1500];
 bool finded=false;
 int y,x;  //one duck's location
+vector<int> nexty,nextx;
 
 void clearVisit(){
     for(int i=0;i<r;i++){
@@ -13,7 +15,6 @@ void clearVisit(){
             visited[i][j]=false;
         }
     }
-    visited[y][x]=true;
 }
 
 void input(){
@@ -32,21 +33,27 @@ void input(){
 
 void finding(int a,int b){
     if(finded) return;
+    if(visited[a][b]) return;
     visited[a][b]=true;
     if(table[a][b]=='L'){
         finded=true;
         return;
     }
-    if(a>0 && table[a-1][b]!='X' && !visited[a-1][b]){
+    if(table[a][b]=='X'){
+        nexty.push_back(a); nextx.push_back(b);
+        visited[a][b]=false;
+        return;
+    }
+    if(a>0){
         finding(a-1,b);
     }
-    if(a<r-1 && table[a+1][b]!='X' && !visited[a+1][b]){
+    if(a<r-1){
         finding(a+1,b);
     }
-    if(b>0 && table[a][b-1]!='X' && !visited[a][b-1]){
+    if(b>0){
         finding(a,b-1);
     }
-    if(b<c-1 && table[a][b+1]!='X' && !visited[a][b+1]){
+    if(b<c-1){
         finding(a,b+1);
     }
 }
@@ -61,14 +68,18 @@ void melting(){
     for(int i=0;i<r;i++){
         for(int j=0;j<c;j++){
             if(copy[i][j]=='X'){
-                if(i>0 && copy[i-1][j]!='X')
+                if(i>0 && copy[i-1][j]!='X'){
                     table[i][j]='.';
-                else if(i<r-1 && copy[i+1][j]!='X')
+                }
+                else if(i<r-1 && copy[i+1][j]!='X'){
                     table[i][j]='.';
-                else if(j>0 && copy[i][j-1]!='X')
+                }
+                else if(j>0 && copy[i][j-1]!='X'){
                     table[i][j]='.';
-                else if(j<c-1 && copy[i][j+1]!='X')
+                }
+                else if(j<c-1 && copy[i][j+1]!='X'){
                     table[i][j]='.';
+                }
             }
         }
     }
@@ -78,17 +89,23 @@ int main(){
     input();
     
     int ans=0;
-    while(true){
-        /*
-        cout<<"\n";
-        for(int i=0;i<r;i++){
-            for(int j=0;j<c;j++){
-                cout<<table[i][j];
-            } cout<<"\n";
-        } cout<<"\n";
-        */
-        clearVisit();
-        finding(y,x);
+    clearVisit();
+    finding(y,x);
+    while(!finded){
+        //only find somewhere haven't been visited.
+        vector<int> tempy,tempx;
+        int n=nexty.size();
+        //cout<<n<<"\n";
+        for(int i=0;i<n;i++){
+            tempy.push_back(nexty[i]);
+            tempx.push_back(nextx[i]);
+        }
+        nexty.clear();nextx.clear();
+        for(int i=0;i<n;i++){
+            finding(tempy.back(),tempx.back());
+            tempy.pop_back(); tempx.pop_back();
+            if(finded) break;
+        }
         if(finded) break;
         melting();
         ans++;
