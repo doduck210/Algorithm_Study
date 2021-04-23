@@ -1,49 +1,90 @@
 //https://www.acmicpc.net/problem/1150
 #include <iostream>
 #include <vector>
-#include <algorithm>
-#include <climits>
+#include <queue>
+
 using namespace std;
-int n,k;
-vector<int> company;
-vector<int> distan;
-int ans=INT_MAX;
 
-void input(){
-    cin>>n>>k;
-    for(int i=0;i<n;i++){
-        int temp; cin>>temp;
-        company.push_back(temp);
+typedef struct
+{
+    int left, right, x;
+} input;
+
+typedef struct
+{
+    int left, right, len;
+} pqelem;
+
+struct compare
+{
+    bool operator () (pqelem a, pqelem b)
+    {
+        return a.len > b.len;
+    }
+};
+
+input in[100002];
+int n, k, ans = 0;
+int length[100002];
+priority_queue < pqelem, vector<pqelem>, compare > pq;
+
+void getinput(){
+    scanf("%d %d", &n, &k);
+    
+    for (int i = 1; i <= n; i++)
+    {
+    	scanf("%d", &in[i].x);
+    	in[i].left = i-1;
+    	in[i].right = i+1;
     }
 }
 
-void getDistan(){
-    for(int i=1;i<n;i++){
-        distan.push_back(company[i]-company[i-1]);
+void getdistance(){
+    for (int i = 1; i < n; i++)
+    {
+        pqelem tmp;
+        tmp.left = i;
+        tmp.right = i+1;
+        tmp.len = in[i+1].x - in[i].x;
+        pq.push(tmp);
+        length[i] = tmp.len;
     }
 }
 
-void bfs(int loca,int cnt,int cur){
-    if(cnt==k){
-        ans=min(cur,ans);
-        return;
+void greedy(){
+    while (k--)
+    {
+        pqelem tmp = pq.top();
+        pq.pop();
+	
+        int left = tmp.left, right = tmp.right, len = tmp.len;
+		
+        if (left < 1 || right > n || right != in[left].right || left != in[right].left)
+        {
+            k++; //pq still hold the erased left, right value. So pop this and continue.
+            continue;
+        }
+		
+        ans += len;
+        int nextLeft = in[left].left, nextRight = in[right].right;
+
+        tmp.left = nextLeft;
+        tmp.right = nextRight;
+        length[nextLeft] = length[nextLeft] + length[right] - len;
+        tmp.len = length[nextLeft];
+        pq.push(tmp);
+
+        in[nextLeft].right = nextRight;
+        in[nextRight].left = nextLeft;
     }
-    if(loca>=n-1){
-        return;
-    }
-    bfs(loca+1,cnt,cur);
-    bfs(loca+2,cnt+1,cur+distan[loca]);
 }
 
-int main(){
-    ios::sync_with_stdio(false); 
-    cout.tie(NULL); 
-    cin.tie(NULL);
-
-    input();
-    getDistan();
-    bfs(0,0,0);
-    cout<<ans<<"\n";
-
+int main()
+{    
+	getinput();
+    getdistance();
+    greedy();
+    
+    printf("%d", ans);
     return 0;
 }
