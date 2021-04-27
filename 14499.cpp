@@ -1,5 +1,5 @@
 //for samsung software test
-//BOJ 14499 Rolling Dice
+//BOJ 14499 Rolling Dice 
 //https://www.acmicpc.net/problem/14499
 
 #include <iostream>
