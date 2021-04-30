@@ -1,4 +1,4 @@
-//https://www.acmicpc.net/problem/15591
+//https://www.acmicpc.net/problem/15591 
 #include <iostream>
 #include <vector>
 using namespace std;
