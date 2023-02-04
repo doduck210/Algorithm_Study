@@ -15,7 +15,14 @@ void input(){
 }
 
 int mxL(){
-    
+    int mxL=0;
+    for(int i=0;i<K;i++){
+        for(int j=0;j<K;j++){
+            for(int a=0;i<K;i++){
+                
+            }
+        }
+    }
 }
 
 int main(){
