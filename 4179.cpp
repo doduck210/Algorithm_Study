@@ -1,13 +1,14 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <queue>
 using namespace std;
 int R,C;
 char table[1000][1000];
-int ans=1000001;
+int ans=-1;
 
-int initY,initX;
-vector<int> fY,fX;
+queue<int> y,x,fcnt;
+vector<int> fy,fx;
 int dy[4]={-1,0,1,0};
 int dx[4]={0,-1,0,1};
 
@@ -17,57 +18,59 @@ void input(){
         for(int j=0;j<C;j++){
             cin>>table[i][j];
             if(table[i][j]=='J'){
-                initY=i; initX=j; table[i][j]='.';
+                y.push(i); x.push(j);
+                fcnt.push(1);
             }
             else if(table[i][j]=='F'){
-                fY.push_back(i); fX.push_back(j);
+                fy.push_back(i); fx.push_back(j);
             }
         }
     }
 }
 
-void dfs(int y,int x,int cnt,vector<int> fy,vector<int> fx){
-    //check edge
-    if(y==0||x==0||y==R-1||x==C-1){
-        ans=min(ans,cnt+1);
-        return;
-    }
-    //spread fire
-    vector<int> adY,adX;
-    for(int j=0;j<fy.size();j++){
-        for(int i=0;i<4;i++){
-            int ny=fy[j]+dy[i], nx=fx[j]+dx[i];
-            if(ny<R&&ny>=0&&nx<C&&nx>=0&&table[ny][nx]=='.'){
-                table[ny][nx]='F';
-                adY.push_back(ny); adX.push_back(nx);
+void bfs(){
+    int fcprev=0;
+    while(!y.empty()){
+        int yy=y.front(), xx=x.front(), fCnt=fcnt.front();
+        y.pop(); x.pop(); fcnt.pop();
+        if(table[yy][xx]=='F') continue;
+        //check edge
+        if(yy==R-1||yy==0||xx==C-1||xx==0){
+            ans=fCnt;
+            return;
+        }
+        //Spread Fire
+        if(fCnt!=fcprev){
+            int size=fy.size();
+            for(int i=0;i<size;i++){
+                for(int j=0;j<4;j++){
+                    int ny=fy[i]+dy[j], nx=fx[i]+dx[j];
+                    if(ny<R&&ny>=0&&nx<C&&nx>=0&&(table[ny][nx]=='.'||table[ny][nx]=='J')){
+                        table[ny][nx]='F';
+                        fy.push_back(ny); fx.push_back(nx);
+                    }
+                }
+            }
+            for(int i=0;i<size;i++){
+                fy.erase(fy.begin()); fx.erase(fx.begin());
             }
         }
-
-    }
-    //move
-    for(int i=0;i<4;i++){
-        int ny=y+dy[i], nx=x+dx[i];
-        if(ny<R&&ny>=0&&nx<C&&nx>=0&&table[ny][nx]=='.'){
-            /*cout<<ny<<" "<<nx<<endl;
-            for(int a=0;a<R;a++){
-                for(int b=0;b<C;b++){
-                    cout<<table[a][b];
-                } cout<<endl;
-            }*/
-            dfs(ny,nx,cnt+1,adY,adX);
+        fcprev=fCnt;
+        //Move
+        for(int i=0;i<4;i++){
+            int ny=yy+dy[i], nx=xx+dx[i];
+            if(ny<R&&ny>=0&&nx<C&&nx>=0&&table[ny][nx]=='.'){
+                table[ny][nx]='J';
+                y.push(ny); x.push(nx); fcnt.push(fCnt+1);
+            }
         }
     }
-    //extinguish fire
-    for(int i=0;i<adY.size();i++){
-        table[adY[i]][adX[i]]='.';
-    }
-    adY.clear();adX.clear();
 }
 
 int main(){
     input();
-    dfs(initY,initX,0,fY,fX);
-    if(ans==1000001) ans=-1;
-    cout<<ans<<"\n";
+    bfs();
+    if(ans==-1) cout<<"IMPOSSIBLE\n";
+    else cout<<ans<<"\n";
     return 0;
 }
