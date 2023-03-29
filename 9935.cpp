@@ -5,12 +5,27 @@ using namespace std;
 int main(){
     string s; cin>>s;
     string b; cin>>b;
-    while(s.find(b)<s.size()){
-        string nxt=s.substr(0,s.find(b));
-        nxt+=s.substr(s.find(b)+b.size(),s.size()-s.find(b)+b.size());
-        s=nxt;
+    vector<char> ans;
+    for(int i=0;i<s.size();i++){
+        ans.push_back(s[i]);
+        bool including=true;
+        for(int j=1;j<=b.size();j++){
+            if(ans[ans.size()-j]!=b[b.size()-j]){
+                including=false;
+                break;
+            }
+        }
+        if(including){
+            for(int j=0;j<b.size();j++){
+                ans.pop_back();
+            }
+        }
     }
-    if(s.size()==0) cout<<"FRULA\n";
-    else cout<<s<<'\n';
+    if(ans.size()==0) cout<<"FRULA\n";
+    else{
+        for(int i=0;i<ans.size();i++){
+            cout<<ans[i];
+        } cout<<'\n';
+    }
     return 0;
 }
